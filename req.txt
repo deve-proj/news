@@ -1,0 +1,6 @@
+python-dotnenv
+motor
+fastapi
+uvicorn
+pydantic
+pymongo
