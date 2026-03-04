@@ -1,28 +1,44 @@
-from fastapi import FastAPI
-#from models.getNewsByAuthorId import getNewsByAuthorId
-from .database.main import dataBase
+from fastapi import FastAPI, Header
+from .database.main import DataBase
+from .models.createPost import create_post_model
+from .common.jwtDecryptor import JWTDecryptor
+from typing import Optional
 
 app = FastAPI()
-database = dataBase()
+dataBase = DataBase()
 
 @app.get('/news')
-async def getNews():
+async def get_news_by_author_id(user_id : str = None, post_id : str = None, auth : Optional[str] = Header(None, alias="Authorization")):
 
-    return {
+    if post_id:
 
-        "status": 200,
+        return await dataBase.get_post_by_post_id(post_id)
 
+    if user_id:
 
-    }
+        return await dataBase.get_posts_by_user_id(user_id)
 
-@app.get('/news/')
-async def getNewsByAuthorId(authorId : int):
+    else:
 
-    result = await database.getPostsByAuthorId(authorId)
+        return await dataBase.get_all_posts()
 
-    return {
+@app.post('/news')
+async def create_post(post_data : create_post_model, auth : Optional[str] = Header(None, alias="Authorization")):
 
-        "status": 200,
-        "posts": result
+    jwt = JWTDecryptor(auth)
 
-    }
+    return await dataBase.create_post(post_data, jwt.extract_user_id())
+
+@app.delete('/news')
+async def delete_post(post_id : str, auth : Optional[str] = Header(None, alias="Authorization")):
+
+    jwt = JWTDecryptor(auth)
+
+    return await dataBase.delete_post(post_id, jwt.extract_user_id())
+
+@app.put('/news')
+async def update_post(post_id : str, post_data : create_post_model, auth : Optional[str] = Header(None, alias="Authorization")):
+
+    jwt = JWTDecryptor(auth)
+
+    return await dataBase.update_post(post_id, jwt.extract_user_id(), post_data)

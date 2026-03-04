@@ -2,8 +2,12 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from motor import motor_asyncio
 import os
+from ..models.createPost import create_post_model
+from fastapi import HTTPException
+from bson import ObjectId
+from typing import Dict, Any
 
-class dataBase:
+class DataBase:
 
     def __init__(self):
 
@@ -16,12 +20,99 @@ class dataBase:
         self.db = self.client["news"]
         self.posts = self.db['posts']
 
-    async def getPostsByAuthorId(self, authorId : int, limit = 10):
+    async def get_all_posts(self):
 
-        result = await self.posts.find({"user_id": authorId}).to_list(length=limit)
+        try:
 
-        for post in result:
+            result = await self.posts.find().to_list()
 
-            post["_id"] = str(post["_id"])
+            for post in result:
 
-        return result
+                post["_id"] = str(post["_id"])
+            
+            return result
+        
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+
+    async def get_posts_by_user_id(self, user_id : str, limit = 10):
+
+        try:
+
+            result = await self.posts.find({"user_id": user_id}).to_list(length=limit)
+
+            for post in result:
+
+                post["_id"] = str(post["_id"])
+
+            return result
+        
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def get_post_by_post_id(self, post_id : str):
+
+        try:
+
+            result = await self.posts.find_one({"_id": ObjectId(post_id)})
+
+            result["_id"] = str(result["_id"])
+
+            return result
+        
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def create_post(self, post : create_post_model, user_id : str):
+
+        try:
+
+            post = post.model_dump()
+
+            post["user_id"] = user_id
+
+            await self.posts.insert_one(post)
+        
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def delete_post(self, post_id : str, user_id : str):
+
+        try:
+
+            post = await self.posts.find_one({"_id": ObjectId(post_id)})
+
+            if post["user_id"] == user_id:
+
+                await self.posts.delete_one({"_id": ObjectId(post_id)})
+
+            else:
+
+                return HTTPException(status_code=401, detail="You can't delete not yours post")
+            
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def update_post(self, post_id : str, user_id : str, new_content : create_post_model):
+
+        try:
+
+            post = await self.posts.find_one({"_id": ObjectId(post_id)})
+
+            if post["user_id"] == user_id:
+
+                await self.posts.update_one({"_id": ObjectId(post_id)}, {"$set": new_content.model_dump()})
+
+            else:
+
+                return HTTPException(status_code=401, detail="You can't update not yours post")
+        
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
