@@ -20,7 +20,7 @@ class DataBase:
         db_name = os.getenv("DB_NAME")
 
         self.client = motor_asyncio.AsyncIOMotorClient(f"mongodb://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}")
-        self.db = self.client["news"]
+        self.db = self.client[db_name]
         self.posts = self.db['posts']
 
     async def get_all_posts(self):
