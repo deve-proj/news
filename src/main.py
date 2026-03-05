@@ -8,7 +8,7 @@ app = FastAPI()
 dataBase = DataBase()
 
 @app.get('/news')
-async def get_news_by_author_id(user_id : str = None, post_id : str = None, auth : Optional[str] = Header(None, alias="Authorization")):
+async def get_news_by_author_id(user_id : str = None, post_id : str = None):
 
     if post_id:
 
