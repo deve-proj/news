@@ -19,7 +19,10 @@ class DataBase:
         db_password = os.getenv("DB_PASSWORD")
         db_name = os.getenv("DB_NAME")
 
-        self.client = motor_asyncio.AsyncIOMotorClient(f"mongodb://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}")
+        db_url = f"mongodb://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+        print(f"db url: {db_url}")
+
+        self.client = motor_asyncio.AsyncIOMotorClient(db_url)
         self.db = self.client[db_name]
         self.posts = self.db['posts']
 
