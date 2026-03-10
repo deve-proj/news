@@ -10,3 +10,4 @@ aioboto3
 prometheus-client
 prometheus-fastapi-instrumentator
 python-multipart
+types_aiobotocore_s3
