@@ -29,10 +29,6 @@ async def get_news_by_author_id(user_id : str = None, post_id : str = None):
 
     else:
 
-        result = await redisClient.test_connection()
-
-        print(result)
-
         return {"result": await dataBase.get_all_posts(), "time": 2434}
 
 @app.post('/news')
