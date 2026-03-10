@@ -5,3 +5,8 @@ uvicorn
 pydantic
 pymongo
 PyJWT
+redis[hiredis]
+aioboto3
+prometheus-client
+prometheus-fastapi-instrumentator
+python-multipart

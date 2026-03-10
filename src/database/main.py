@@ -6,6 +6,7 @@ from ..models.createPost import create_post_model
 from fastapi import HTTPException
 from bson import ObjectId
 from typing import Dict, Any
+from ..common.jsonParser import replace_image_name_to_url_in_post
 
 class DataBase:
 
@@ -20,7 +21,6 @@ class DataBase:
         db_name = os.getenv("DB_NAME")
 
         db_url = f"mongodb://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?authSource=admin"
-        print(f"db url: {db_url}")
 
         self.client = motor_asyncio.AsyncIOMotorClient(db_url)
         self.db = self.client[db_name]
@@ -76,11 +76,16 @@ class DataBase:
 
         try:
 
-            post = post.model_dump()
+            post_id = ObjectId()
 
-            post["user_id"] = user_id
+            json_post = post.model_dump()
+            json_post["views"] = 0
+            json_post["_id"] = post_id
+            json_post["post"] = replace_image_name_to_url_in_post(post, post_id)
 
-            await self.posts.insert_one(post)
+            await self.posts.insert_one(json_post)
+
+            return post_id
         
         except Exception as e:
 
@@ -122,3 +127,13 @@ class DataBase:
 
             return HTTPException(status_code=400, detail=str(e))
         
+
+    async def update_views_counter_by_post_id(self, post_id : str):
+
+        try:
+
+            await self.posts.update_one({"_id": ObjectId(post_id)}, {"$inc": {"views": 1}})
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
