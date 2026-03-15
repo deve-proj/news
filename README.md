@@ -2,7 +2,7 @@
 
 Исходный код новостного центра DEVE.
 
-Модератор: LovchikovMark
+Модератор: <a href="https://github.com/LovchikovMark">LovchikovMark</a>
 
 ## Технологии:
 
