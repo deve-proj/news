@@ -1,0 +1,25 @@
+# graphql/types/post.py
+import strawberry
+from typing import List, Optional
+from ...models.post import post_model, post_data, content_block
+from strawberry.scalars import JSON
+
+@strawberry.experimental.pydantic.type(model=content_block)
+class ContentBlock:
+    type: strawberry.auto
+    style: Optional[JSON] = None
+    value: strawberry.auto
+
+@strawberry.experimental.pydantic.type(model=post_data)
+class PostData:
+    title: strawberry.auto
+    preview_image: strawberry.auto
+    content: List[ContentBlock]
+
+@strawberry.experimental.pydantic.type(model=post_model)
+class Post:
+    user_id: strawberry.auto
+    datetime: strawberry.auto
+    post: PostData
+
+    id: str = strawberry.field()

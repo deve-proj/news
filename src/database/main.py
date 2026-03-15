@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from motor import motor_asyncio
 import os
-from ..models.createPost import create_post_model
+from ..models.post import post_model
 from fastapi import HTTPException
 from bson import ObjectId
 from typing import Dict, Any
@@ -72,7 +72,7 @@ class DataBase:
 
             return HTTPException(status_code=400, detail=str(e))
         
-    async def create_post(self, post : create_post_model, user_id : str):
+    async def create_post(self, post : post_model, user_id : str):
 
         try:
 
@@ -109,7 +109,7 @@ class DataBase:
 
             return HTTPException(status_code=400, detail=str(e))
         
-    async def update_post(self, post_id : str, user_id : str, new_content : create_post_model):
+    async def update_post(self, post_id : str, user_id : str, new_content : post_model):
 
         try:
 

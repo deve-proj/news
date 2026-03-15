@@ -10,9 +10,10 @@ class content_block(BaseModel):
 class post_data(BaseModel):
 
     title : str
+    preview_image : str
     content : list[content_block]
 
-class create_post_model(BaseModel):
+class post_model(BaseModel):
 
     user_id : str
     datetime : int
