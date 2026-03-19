@@ -45,7 +45,9 @@ async def resolve_posts(info : Info, user_id : Optional[str] = None, post_id : O
             id=str(post['_id']),
             user_id=post['user_id'],
             datetime=post['datetime'],
-            post=post_data
+            post=post_data,
+            views=post['views'],
+            comments=post['comments']
         ))
 
     return result

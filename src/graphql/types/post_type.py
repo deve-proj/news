@@ -1,7 +1,7 @@
 # graphql/types/post.py
 import strawberry
 from typing import List, Optional
-from ...models.post import post_model, post_data, content_block
+from ...models.post_model import post_model, post_data, content_block
 from strawberry.scalars import JSON
 
 @strawberry.experimental.pydantic.type(model=content_block)
@@ -18,8 +18,9 @@ class PostData:
 
 @strawberry.experimental.pydantic.type(model=post_model)
 class Post:
+    id: str = strawberry.field()
     user_id: strawberry.auto
     datetime: strawberry.auto
+    views: strawberry.auto
     post: PostData
-
-    id: str = strawberry.field()
+    comments: strawberry.auto

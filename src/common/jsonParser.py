@@ -1,5 +1,5 @@
 import json
-from ..models.post import post_model
+from ..models.post_model import post_model
 import os
 from dotenv import load_dotenv
 

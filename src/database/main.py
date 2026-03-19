@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from motor import motor_asyncio
 import os
-from ..models.post import post_model
+from ..models.post_model import post_model
 from fastapi import HTTPException
 from bson import ObjectId
 from typing import Dict, Any
@@ -25,6 +25,7 @@ class DataBase:
         self.client = motor_asyncio.AsyncIOMotorClient(db_url)
         self.db = self.client[db_name]
         self.posts = self.db['posts']
+        self.comments = self.db['comments']
 
     async def get_all_posts(self):
 
@@ -63,6 +64,8 @@ class DataBase:
         try:
 
             result = await self.posts.find_one({"_id": ObjectId(post_id)})
+
+            await self.update_views_counter_by_post_id(result["_id"])
 
             result["_id"] = str(result["_id"])
 
@@ -133,6 +136,40 @@ class DataBase:
         try:
 
             await self.posts.update_one({"_id": ObjectId(post_id)}, {"$inc": {"views": 1}})
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def add_comment(self, post_id, message):
+
+        try:
+
+            comment_id = (await self.comments.insert_one(message)).inserted_id
+
+            await self.posts.update_one({'_id': ObjectId(post_id)}, {"$push": {"comments": comment_id}})
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def get_comments(self, post_id):
+
+        try:
+
+            result = []
+
+            comment_ids = (await self.posts.find_one({'_id': ObjectId(post_id)})).get('comments', [])
+
+            for comment_id in comment_ids:
+                
+                comment = await self.comments.find_one({'_id': comment_id})
+
+                comment['_id'] = str(comment['_id'])
+
+                result.append(comment)
+
+            return result
 
         except Exception as e:
 

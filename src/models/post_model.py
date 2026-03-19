@@ -15,6 +15,8 @@ class post_data(BaseModel):
 
 class post_model(BaseModel):
 
+    views: Optional[int] = 0
     user_id : str
     datetime : int
     post : post_data
+    comments: Optional[List[str]] = []
