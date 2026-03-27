@@ -62,7 +62,7 @@ async def update_post(post_id : str, post_data : post_model, auth : Optional[str
     return await dataBase.update_post(post_id, jwt.extract_user_id(), post_data)
 
 @app.post('/news/comment')
-async def comment(post_id : str, comment : comment_model = Body(...), auth : Optional[str] = Header(None, alias="Authorization")):
+async def comment(comment : comment_model = Body(...), auth : Optional[str] = Header(None, alias="Authorization")):
 
     try:
 
@@ -70,44 +70,67 @@ async def comment(post_id : str, comment : comment_model = Body(...), auth : Opt
 
         comment = comment_model.model_dump(comment)
 
-        await dataBase.add_comment(post_id, comment)
+        await dataBase.add_comment(comment['post_id'], comment)
 
     except Exception as e:
 
         return HTTPException(status_code=400, detail=str(e))
-
-@app.get('/news/comment')
-async def comment(post_id : str):
+    
+@app.post('/news/comment/reply')
+async def reply(reply : comment_model = Body(...), auth : Optional[str] = Header(None, alias="Authorization")):
 
     try:
 
-        return await dataBase.get_comments(post_id)
+        # jwt = JWTDecryptor(auth)
+
+        reply = comment_model.model_dump(reply)
+
+        await dataBase.reply_to_comment(reply['parent_id'], reply)
 
     except Exception as e:
 
         return HTTPException(status_code=400, detail=str(e))
 
+@app.post('/news/comment/like')
+async def like(comment_id : str, auth : Optional[str] = Header(None, alias="Authorization")):
 
+    try:
 
-# @app.get("/test", operation_id="tester")
-# async def test():
+        return await dataBase.like_comment(comment_id)
 
-#     global c
+    except Exception as e:
 
-#     try:
+        return HTTPException(status_code=400, detail=str(e))
+    
+@app.post('/news/comment/dislike')
+async def dislike(comment_id : str, auth : Optional[str] = Header(None, alias="Authorization")):
 
-#         if c == 0:
+    try:
 
-#             c += 1
-#             result = await dataBase.get_post_by_post_id('69b96f1fd6cc7d0612e80c64')
-#             await redisClient.set('69b96f1fd6cc7d0612e80c64', result)
-#             return result
-        
-#         else:
+        return await dataBase.dislike_comment(comment_id)
 
-#             return await redisClient.get('69b96f1fd6cc7d0612e80c64')
+    except Exception as e:
 
+        return HTTPException(status_code=400, detail=str(e))
 
-#     except Exception as e:
+@app.post('/news/like')
+async def like(post_id : str, auth : Optional[str] = Header(None, alias="Authorization")):
 
-#         raise HTTPException(status_code=400, detail=str(e))
+    try:
+
+        return await dataBase.like(post_id)
+
+    except Exception as e:
+
+        return HTTPException(status_code=400, detail=str(e))
+    
+@app.post('/news/dislike')
+async def dislike(post_id : str, auth : Optional[str] = Header(None, alias="Authorization")):
+
+    try:
+
+        return await dataBase.dislike(post_id)
+
+    except Exception as e:
+
+        return HTTPException(status_code=400, detail=str(e))

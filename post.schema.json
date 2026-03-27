@@ -1,8 +1,11 @@
 {
-    "user_id": 1324,
+    "_id": "34gsdhg28r",
+    "user_id": "3427yt435",
     "datetime": 4356475324,
     "tags": [],
     "views": 0,
+    "likes": 0,
+    "dislikes": 0,
     "post": {
         "title": "Post Title",
         "content": [
@@ -24,5 +27,9 @@
                 "value": "some text"
             }
         ]
-    }
+    },
+    "comments": [
+        "3245sfsfg547",
+        "fjh47g4ygh3r"
+    ]
 }

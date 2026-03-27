@@ -5,12 +5,15 @@ from ..database.main import DataBase
 from .types.post_type import Post
 from .types.comment_type import Comment
 from .resolvers.post_resolver import resolve_posts
-from .resolvers.comment_resolver import resolve_comments
+from .dataloaders.comment_loader import CommentLoader
+from .dataloaders.reply_loader import ReplyLoader
 
 async def get_graphql_context():
 
     return {
-        "db": DataBase()
+        "db": DataBase(),
+        "comment_loader": CommentLoader(DataBase()),
+        "reply_loader": ReplyLoader(DataBase())
     }
 
 @strawberry.type
@@ -19,11 +22,6 @@ class Query:
     news: List[Post] = strawberry.field(
         resolver=resolve_posts,
         description="Получить все посты"
-    )
-
-    comments: List[Comment] = strawberry.field(
-        resolver=resolve_comments,
-        description="Получить комментарии"
     )
 
 graphql_schema = strawberry.Schema(query=Query)

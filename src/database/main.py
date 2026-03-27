@@ -153,6 +153,18 @@ class DataBase:
 
             return HTTPException(status_code=400, detail=str(e))
         
+    async def reply_to_comment(self, comment_id, message):
+
+        try:
+
+            reply_id = (await self.comments.insert_one(message)).inserted_id
+
+            await self.comments.update_one({'_id': ObjectId(comment_id)}, {"$push": {"replies": reply_id}})
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
     async def get_comments(self, post_id):
 
         try:
@@ -163,13 +175,53 @@ class DataBase:
 
             for comment_id in comment_ids:
                 
-                comment = await self.comments.find_one({'_id': comment_id})
+                comment = await self.comments.find_one({'_id': comment_id, 'parent_id': None})
 
                 comment['_id'] = str(comment['_id'])
 
                 result.append(comment)
 
             return result
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def like(self, post_id : str):
+
+        try:
+
+            await self.posts.update_one({"_id": ObjectId(post_id)}, {"$inc": {"likes": 1}})
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def dislike(self, post_id : str):
+
+        try:
+
+            await self.posts.update_one({"_id": ObjectId(post_id)}, {"$inc": {"dislikes": 1}})
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def like_comment(self, comment_id : str):
+
+        try:
+
+            await self.comments.update_one({"_id": ObjectId(comment_id)}, {"$inc": {"likes": 1}})
+
+        except Exception as e:
+
+            return HTTPException(status_code=400, detail=str(e))
+        
+    async def dislike_comment(self, comment_id : str):
+
+        try:
+
+            await self.comments.update_one({"_id": ObjectId(comment_id)}, {"$inc": {"dislikes": 1}})
 
         except Exception as e:
 
