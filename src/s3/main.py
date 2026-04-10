@@ -45,3 +45,19 @@ class MinioClient:
                 ContentType=file.content_type,
                 ACL='public-read'
             )
+        
+    async def delete_post_files(self, post_id : str):
+
+        prefix = f"{post_id}/"
+
+        async with (await self.get_client()) as s3:
+
+            paginator = s3.get_paginator('list_objects_v2')
+
+            async for page in paginator.paginate(Bucket="posts", Prefix=prefix):
+
+                if 'Contents' in page:
+
+                    for obj in page['Contents']:
+
+                        await s3.delete_object(Bucket="posts", Key=obj['Key'])

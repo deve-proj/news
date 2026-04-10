@@ -6,7 +6,8 @@ from ..models.post_model import post_model
 from fastapi import HTTPException
 from bson import ObjectId
 from typing import Dict, Any
-from ..common.jsonParser import replace_image_name_to_url_in_post
+from ..utils.jsonParser import replace_image_name_to_url_in_post
+from datetime import datetime
 
 class DataBase:
 
@@ -71,9 +72,9 @@ class DataBase:
 
             return result
         
-        except Exception as e:
+        except:
 
-            return HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=400, detail="There isn't post with this id")
         
     async def create_post(self, post : post_model, user_id : str):
 
@@ -85,6 +86,7 @@ class DataBase:
             json_post["views"] = 0
             json_post["_id"] = post_id
             json_post["post"] = replace_image_name_to_url_in_post(post, post_id)
+            json_post["datetime"] = datetime.now()
 
             await self.posts.insert_one(json_post)
 
@@ -98,34 +100,22 @@ class DataBase:
 
         try:
 
-            post = await self.posts.find_one({"_id": ObjectId(post_id)})
+            await self.posts.delete_one({"_id": ObjectId(post_id)})
 
-            if post["user_id"] == user_id:
-
-                await self.posts.delete_one({"_id": ObjectId(post_id)})
-
-            else:
-
-                return HTTPException(status_code=401, detail="You can't delete not yours post")
-            
         except Exception as e:
 
-            return HTTPException(status_code=400, detail=str(e))
+            return HTTPException(status_code=405, detail=str(e))
         
-    async def update_post(self, post_id : str, user_id : str, new_content : post_model):
+    async def update_post(self, post_id : str, new_content : post_model):
 
         try:
 
-            post = await self.posts.find_one({"_id": ObjectId(post_id)})
+            post_data = new_content.model_dump()
 
-            if post["user_id"] == user_id:
+            post_data["post"] = replace_image_name_to_url_in_post(new_content, post_id)
 
-                await self.posts.update_one({"_id": ObjectId(post_id)}, {"$set": new_content.model_dump()})
-
-            else:
-
-                return HTTPException(status_code=401, detail="You can't update not yours post")
-        
+            await self.posts.update_one({"_id": ObjectId(post_id)}, {"$set": post_data})
+            
         except Exception as e:
 
             return HTTPException(status_code=400, detail=str(e))

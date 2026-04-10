@@ -16,11 +16,12 @@ class post_data(BaseModel):
     content : list[content_block]
 
 class post_model(BaseModel):
-    
-    views: Optional[int] = 0
-    likes: Optional[int] = 0
-    dislikes: Optional[int] = 0
+
+    views : Optional[int] = 0
+    likes : Optional[int] = 0
+    dislikes : Optional[int] = 0
+    tags : Optional[List[str]] = []
     user_id : str
-    datetime : int
+    datetime : Optional[str] = ""
     post : post_data
     comments: Optional[List[comment_model]] = []

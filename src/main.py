@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Header, UploadFile, File, Form, HTTPException, status, Body
 from .database.main import DataBase
 from .models.post_model import post_model
-from .common.jwtDecryptor import JWTDecryptor
+from .utils.jwtDecryptor import JWTDecryptor
 from typing import Optional
 from .redisClient.main import RedisClient
 from .s3.main import MinioClient
@@ -10,6 +10,7 @@ import json
 from fastapi.middleware.cors import CORSMiddleware
 from .graphql.main import graphql_router
 from .models.comment_model import comment_model
+from .utils.decorators.require_post_owner import require_post_owner
 
 app = FastAPI(title="DEVE news center", version='0.0.1')
 
@@ -28,20 +29,19 @@ s3 = MinioClient()
 app.include_router(graphql_router, prefix="")
 
 @app.post('/news')
-async def create_post(structure : str = Form(...), files : Optional[List[UploadFile]] = None, auth : Optional[str] = Header(None, alias="Authorization")):
+async def create_post(post_data : str = Form(...), files : Optional[List[UploadFile]] = None, auth : Optional[str] = Header(None, alias="Authorization")):
 
     try:
 
         jwt = JWTDecryptor(auth)
 
-        structure = post_model.model_validate(json.loads(structure))
+        post_data = post_model.model_validate(json.loads(post_data))
 
-        post_id = await dataBase.create_post(structure, jwt.extract_user_id())
+        post_id = await dataBase.create_post(post_data, jwt.extract_user_id())
 
         for file in files:
 
             await s3.upload_file(post_id, file, file.filename)
-
 
     except Exception as e:
 
@@ -52,14 +52,31 @@ async def delete_post(post_id : str, auth : Optional[str] = Header(None, alias="
 
     jwt = JWTDecryptor(auth)
 
-    return await dataBase.delete_post(post_id, jwt.extract_user_id())
+    post_owner_id = (await dataBase.get_post_by_post_id(post_id))["user_id"]
+    user_id = jwt.extract_user_id()
+
+    if post_owner_id == user_id:
+
+        await s3.delete_post_files(post_id)
+        await dataBase.delete_post(post_id, user_id)
+
+    else:
+
+        raise HTTPException(status_code=401, detail="You cannot delete not yours post")
 
 @app.put('/news', status_code=status.HTTP_201_CREATED, operation_id="updatePost")
-async def update_post(post_id : str, post_data : post_model, auth : Optional[str] = Header(None, alias="Authorization")):
+@require_post_owner()
+async def update_post(post_id : str = Form(...), post_data : str = Form(...), files : Optional[List[UploadFile]] = None, auth : Optional[str] = Header(None, alias="Authorization")):
+    
+    post_data = post_model.model_validate(json.loads(post_data))
+    
+    await s3.delete_post_files(post_id)
 
-    jwt = JWTDecryptor(auth)
+    for file in files:
 
-    return await dataBase.update_post(post_id, jwt.extract_user_id(), post_data)
+            await s3.upload_file(post_id, file, file.filename)
+
+    return await dataBase.update_post(post_id, post_data)
 
 @app.post('/news/comment')
 async def comment(comment : comment_model = Body(...), auth : Optional[str] = Header(None, alias="Authorization")):
