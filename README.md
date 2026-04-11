@@ -1,6 +1,10 @@
 # DEVE News Center Service
 
-Исходный код новостного центра DEVE.
+## Запуск
+
+```
+docker pull ghcr.io/deve-proj/news:latest
+```
 
 Модератор: <a href="https://github.com/LovchikovMark">LovchikovMark</a>
 
