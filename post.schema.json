@@ -1,12 +1,13 @@
 {
-    "_id": "34gsdhg28r",
-    "user_id": "3427yt435",
+    "_id": "507f191e810c19729de860ea",
+    "user_id": "16763be4-6022-406e-a950-fcd5018633ca",
     "datetime": "2026-04-10 17:52:52.576000",
-    "tags": [],
+    "tags": ["some_tag"],
     "views": 0,
     "likes": 0,
     "dislikes": 0,
     "post": {
+        "preview_image": "http://deve.minio/posts/507f191e810c19729de860ea/preview.png",
         "title": "Post Title",
         "content": [
             {
