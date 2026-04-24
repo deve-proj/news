@@ -83,9 +83,10 @@ class DataBase:
             post_id = ObjectId()
 
             json_post = post.model_dump()
+            json_post = replace_image_name_to_url_in_post(post, post_id)
+            print(json_post)
             json_post["views"] = 0
             json_post["_id"] = post_id
-            json_post["post"] = replace_image_name_to_url_in_post(post, post_id)
             json_post["datetime"] = datetime.now()
 
             await self.posts.insert_one(json_post)

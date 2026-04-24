@@ -9,12 +9,6 @@ class content_block(BaseModel):
     type : str
     style : Optional[dict] = None
     value : str
-class post_data(BaseModel):
-
-    title : str
-    preview_image : str
-    content : list[content_block]
-
 class post_model(BaseModel):
 
     views : Optional[int] = 0
@@ -23,5 +17,7 @@ class post_model(BaseModel):
     tags : Optional[List[str]] = []
     user_id : str
     datetime : Optional[str] = ""
-    post : post_data
+    title : str
+    preview_image : str
+    content : list[content_block]
     comments: Optional[List[comment_model]] = []

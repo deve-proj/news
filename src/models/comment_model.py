@@ -11,3 +11,5 @@ class comment_model(BaseModel):
     dislikes : Optional[int] = 0
     replies : Optional[comment_model] = []
     parent_id : Optional[str] = None
+
+    

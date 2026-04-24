@@ -6,29 +6,27 @@
     "views": 0,
     "likes": 0,
     "dislikes": 0,
-    "post": {
-        "preview_image": "http://deve.minio/posts/507f191e810c19729de860ea/preview.png",
-        "title": "Post Title",
-        "content": [
-            {
-                "type": "text",
-                "style": "жирный/курсив/зачёркнутый",
-                "link": "если поле пустое то просто текст, если что то есть, подсветим синим и редирект",
-                "value": "some text"
-            },
-            {
-                "type": "image",
-                "style": "тип сжатия и так далее",
-                "value": "img1.png"
-            },
-            {
-                "type": "text",
-                "style": "жирный/курсив/зачёркнутый",
-                "link": "если поле пустое то просто текст, если что то есть, подсветим синим и редирект",
-                "value": "some text"
-            }
-        ]
-    },
+    "preview_image": "http://deve.minio/posts/507f191e810c19729de860ea/preview.png",
+    "title": "Post Title",
+    "content": [
+        {
+            "type": "text",
+            "style": "жирный/курсив/зачёркнутый",
+            "link": "если поле пустое то просто текст, если что то есть, подсветим синим и редирект",
+            "value": "some text"
+        },
+        {
+            "type": "image",
+            "style": "тип сжатия и так далее",
+            "value": "img1.png"
+        },
+        {
+            "type": "text",
+            "style": "жирный/курсив/зачёркнутый",
+            "link": "если поле пустое то просто текст, если что то есть, подсветим синим и редирект",
+            "value": "some text"
+        }
+    ],
     "comments": [
         "3245sfsfg547",
         "fjh47g4ygh3r"

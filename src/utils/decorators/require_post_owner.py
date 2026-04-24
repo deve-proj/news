@@ -2,7 +2,7 @@ from ...database.main import DataBase
 from typing import Callable, Optional
 from functools import wraps
 from fastapi import Header, HTTPException
-from ...common.jwtDecryptor import JWTDecryptor
+from ...utils.jwtDecryptor import JWTDecryptor
 
 def require_post_owner():
 

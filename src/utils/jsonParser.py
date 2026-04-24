@@ -7,10 +7,17 @@ load_dotenv()
 
 def replace_image_name_to_url_in_post(post : post_model, post_id : str = ''):
 
-    for image in list(filter(lambda block: block.type == 'image', post.post.content)):
+    try:
 
-        image.value = f'http://{os.getenv("MINIO_HOST")}{f":{os.getenv("MINIO_PORT")}" if os.getenv("MINIO_HOST") == 'localhost' else ''}/posts/{post_id}/{image.value}'
+        for image in list(filter(lambda block: block.type == 'image', post.content)):
 
-    post.post.preview_image = f'http://{os.getenv("MINIO_HOST")}{f":{os.getenv("MINIO_PORT")}" if os.getenv("MINIO_HOST") == 'localhost' else ''}/posts/{post_id}/{post.post.preview_image}'
+            image.value = f'http://{os.getenv("MINIO_HOST")}{f":{os.getenv("MINIO_PORT")}" if os.getenv("MINIO_HOST") == 'localhost' else ''}/posts/{post_id}/{image.value}'
 
-    return post.post.model_dump()
+        post.preview_image = f'http://{os.getenv("MINIO_HOST")}{f":{os.getenv("MINIO_PORT")}" if os.getenv("MINIO_HOST") == 'localhost' else ''}/posts/{post_id}/{post.preview_image}'
+
+
+        return post.model_dump()
+
+    except Exception as e:
+
+        raise Exception(e)
