@@ -1,6 +1,6 @@
-from ..types.post_type import Post, ContentBlock
+from ..types.post_type import Post, ContentBlock, UserData
 from typing import List, Optional
-from ...database.main import DataBase
+from ...database.database import DataBase
 from strawberry import Info
 from ..types.comment_type import Comment
 
@@ -9,6 +9,7 @@ async def resolve_posts(info : Info, user_id : Optional[str] = None) -> List[Pos
     db = info.context['db']
     comment_loader = info.context['comment_loader']
     reply_loader = info.context['reply_loader']
+    backend = info.context["backend_client"]
 
     posts = []
     
@@ -27,6 +28,8 @@ async def resolve_posts(info : Info, user_id : Optional[str] = None) -> List[Pos
         post_id_str = str(post['_id'])
 
         comment_data = await comment_loader.load(post_id_str)
+
+        userData = backend.get_user(post['user_id'])
 
         comments = [
             Comment(
@@ -53,7 +56,12 @@ async def resolve_posts(info : Info, user_id : Optional[str] = None) -> List[Pos
 
         result.append(Post(
             id=str(post['_id']),
-            user_id=post['user_id'],
+            user_data=UserData(
+                user_id=userData.id,
+                user_name=userData.name,
+                user_avatar_url=userData.avatar,
+                user_login=userData.login
+            ),
             datetime=post['datetime'],
             title=post['title'],
             preview_image=post['preview_image'],
@@ -71,12 +79,15 @@ async def resolve_post_by_id(info : Info, post_id : str) -> Optional[Post]:
     db = info.context['db']
     comment_loader = info.context['comment_loader']
     reply_loader = info.context['reply_loader']
+    backend = info.context["backend_client"]
 
     post = await db.get_post_by_post_id(post_id)
 
     post_id_str = str(post['_id'])
 
     comment_data = await comment_loader.load(post_id_str)
+
+    userData = backend.get_user(post['user_id'])
 
     comments = [
         Comment(
@@ -103,7 +114,12 @@ async def resolve_post_by_id(info : Info, post_id : str) -> Optional[Post]:
 
     return Post(
         id=str(post['_id']),
-        user_id=post['user_id'],
+        user_data=UserData(
+            id=post["user_id"],
+            name=userData.name,
+            avatar_url=userData.avatar,
+            login=userData.login
+        ),
         datetime=post['datetime'],
         title=post['title'],
         preview_image=post['preview_image'],

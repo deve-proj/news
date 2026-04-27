@@ -1,4 +1,4 @@
-from ...database.main import DataBase
+from ...database.database import DataBase
 from typing import Callable, Optional
 from functools import wraps
 from fastapi import Header, HTTPException

@@ -3,7 +3,6 @@ from typing import Dict, Any, Optional, List
 from fastapi import UploadFile, File
 from .comment_model import comment_model
 
-
 class content_block(BaseModel):
 
     type : str

@@ -1,7 +1,6 @@
-# graphql/dataloaders/comment_loader.py
 from aiodataloader import DataLoader
 from typing import List, Dict, Any
-from ...database.main import DataBase
+from ...database.database import DataBase
 
 class CommentLoader(DataLoader):
     

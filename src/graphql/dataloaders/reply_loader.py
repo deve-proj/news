@@ -1,5 +1,5 @@
 from aiodataloader import DataLoader
-from ...database.main import DataBase
+from ...database.database import DataBase
 from typing import List, Dict
 
 class ReplyLoader(DataLoader):

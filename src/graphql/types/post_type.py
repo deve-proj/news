@@ -11,15 +11,22 @@ class ContentBlock:
     style: Optional[JSON] = None
     value: strawberry.auto
 
-@strawberry.experimental.pydantic.type(model=post_model)
+@strawberry.type
+class UserData:
+    id : str
+    name : str
+    login : str
+    avatar_url : str
+
+@strawberry.type
 class Post:
-    id: str = strawberry.field()
-    user_id: strawberry.auto
-    datetime: strawberry.auto
-    views: strawberry.auto
-    likes : strawberry.auto
-    dislikes : strawberry.auto
-    title: strawberry.auto
-    preview_image: strawberry.auto
+    id: str
+    user_data : UserData
+    datetime: str
+    views: str
+    likes : str
+    dislikes : str
+    title: str
+    preview_image: str
     content: List[ContentBlock]
     comments: Optional[List[Comment]] = None

@@ -1,16 +1,17 @@
 from fastapi import FastAPI, Header, UploadFile, File, Form, HTTPException, status, Body
-from .database.main import DataBase
+from .database.database import DataBase
 from .models.post_model import post_model
 from .utils.jwtDecryptor import JWTDecryptor
 from typing import Optional
-from .redisClient.main import RedisClient
-from .s3.main import MinioClient
+from .clients.redis.redisClient import RedisClient
+from .clients.minio.minioClient import MinioClient
 from typing import List, Optional
 import json
 from fastapi.middleware.cors import CORSMiddleware
-from .graphql.main import graphql_router
+from .graphql.graphql import graphql_router
 from .models.comment_model import comment_model
 from .utils.decorators.require_post_owner import require_post_owner
+from .clients.backend.backendClient import BackendClient
 
 app = FastAPI(title="DEVE news center", version='0.0.1')
 
@@ -25,6 +26,7 @@ app.add_middleware(
 dataBase = DataBase()
 redisClient = RedisClient()
 s3 = MinioClient()
+backend = BackendClient()
 
 app.include_router(graphql_router, prefix="")
 
@@ -147,6 +149,17 @@ async def dislike(post_id : str, auth : Optional[str] = Header(None, alias="Auth
     try:
 
         return await dataBase.dislike(post_id)
+
+    except Exception as e:
+
+        return HTTPException(status_code=400, detail=str(e))
+    
+@app.get('/test')
+def test(user_id : str):
+
+    try:
+
+        return backend.get_user(user_id)
 
     except Exception as e:
 
