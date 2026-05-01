@@ -28,5 +28,6 @@ class Post:
     dislikes : str
     title: str
     preview_image: str
+    category : str
     content: List[ContentBlock]
     comments: Optional[List[Comment]] = None

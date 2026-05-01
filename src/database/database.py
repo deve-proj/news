@@ -10,6 +10,16 @@ from ..utils.jsonParser import replace_image_name_to_url_in_post
 from datetime import datetime
 
 class DataBase:
+    
+    _instance = None
+
+    def __new__(cls):
+
+        if(cls._instance is None):
+
+            cls._instance = super().__new__(cls)
+
+        return cls._instance
 
     def __init__(self):
 
@@ -86,8 +96,11 @@ class DataBase:
             json_post = replace_image_name_to_url_in_post(post, post_id)
             print(json_post)
             json_post["views"] = 0
+            json_post["likes"] = 0
+            json_post["dislikes"] = 0
             json_post["_id"] = post_id
             json_post["datetime"] = datetime.now()
+            json_post["user_id"] = user_id
 
             await self.posts.insert_one(json_post)
 
@@ -97,7 +110,7 @@ class DataBase:
 
             return HTTPException(status_code=400, detail=str(e))
         
-    async def delete_post(self, post_id : str, user_id : str):
+    async def delete_post(self, post_id : str):
 
         try:
 

@@ -49,22 +49,14 @@ async def create_post(post_data : str = Form(...), files : Optional[List[UploadF
 
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.delete('/news', status_code=status.HTTP_200_OK, operation_id="deletePost")
+@require_post_owner()
 async def delete_post(post_id : str, auth : Optional[str] = Header(None, alias="Authorization")):
 
-    jwt = JWTDecryptor(auth)
+    await s3.delete_post_files(post_id)
+    await dataBase.delete_post(post_id)
 
-    post_owner_id = (await dataBase.get_post_by_post_id(post_id))["user_id"]
-    user_id = jwt.extract_user_id()
-
-    if post_owner_id == user_id:
-
-        await s3.delete_post_files(post_id)
-        await dataBase.delete_post(post_id, user_id)
-
-    else:
-
-        raise HTTPException(status_code=401, detail="You cannot delete not yours post")
 
 @app.put('/news', status_code=status.HTTP_201_CREATED, operation_id="updatePost")
 @require_post_owner()
@@ -159,7 +151,19 @@ def test(user_id : str):
 
     try:
 
-        return backend.get_user(user_id)
+        users = backend.get_users([user_id])
+
+        return [
+            {
+                "id": user_id,
+                "name": user.name,
+                "email": user.email,
+                "legend": user.legend,
+                "avatar": user.avatar,
+                "login": user.login,
+                "reputationScore": user.reputationScore
+            } for user in users
+        ]
 
     except Exception as e:
 

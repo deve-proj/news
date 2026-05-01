@@ -2,6 +2,7 @@ import grpc
 from ...grpc import user_pb2, user_pb2_grpc
 from dotenv import load_dotenv
 import os
+from typing import List
 
 load_dotenv()
 
@@ -25,3 +26,17 @@ class BackendClient:
         except Exception as e:
 
             raise Exception(e)
+        
+    def get_users(self, user_ids : List[str]):
+
+        try:
+
+            request = user_pb2.UserListRequest(ids=user_ids)
+            response = self.stub.GetUsers(request)
+
+            return list(response.users)
+
+        except Exception as e:
+
+            raise Exception(e)
+        

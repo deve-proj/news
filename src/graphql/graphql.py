@@ -8,6 +8,7 @@ from .resolvers.post_resolver import resolve_posts, resolve_post_by_id
 from .dataloaders.comment_loader import CommentLoader
 from .dataloaders.reply_loader import ReplyLoader
 from ..clients.backend.backendClient import BackendClient
+from .dataloaders.user_loader import UserLoader
 
 async def get_graphql_context():
 
@@ -15,7 +16,7 @@ async def get_graphql_context():
         "db": DataBase(),
         "comment_loader": CommentLoader(DataBase()),
         "reply_loader": ReplyLoader(DataBase()),
-        "backend_client": BackendClient()
+        "user_loader": UserLoader(BackendClient())
     }
 
 @strawberry.type

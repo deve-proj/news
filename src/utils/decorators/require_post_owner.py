@@ -1,12 +1,10 @@
 from ...database.database import DataBase
 from typing import Callable, Optional
 from functools import wraps
-from fastapi import Header, HTTPException
+from fastapi import Header, HTTPException, Depends
 from ...utils.jwtDecryptor import JWTDecryptor
 
 def require_post_owner():
-
-    db = DataBase()
 
     def decorator(endpoint_func : Callable):
 
@@ -14,6 +12,8 @@ def require_post_owner():
         async def wrapper(*args, **kwargs):
 
             try:
+
+                db = DataBase()
                 
                 post_id = kwargs.get("post_id")
                 jwt = JWTDecryptor(kwargs.get("auth"))

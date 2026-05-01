@@ -10,13 +10,8 @@ class content_block(BaseModel):
     value : str
 class post_model(BaseModel):
 
-    views : Optional[int] = 0
-    likes : Optional[int] = 0
-    dislikes : Optional[int] = 0
+    category : str
     tags : Optional[List[str]] = []
-    user_id : str
-    datetime : Optional[str] = ""
     title : str
     preview_image : str
     content : list[content_block]
-    comments: Optional[List[comment_model]] = []

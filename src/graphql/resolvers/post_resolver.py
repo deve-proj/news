@@ -4,73 +4,91 @@ from ...database.database import DataBase
 from strawberry import Info
 from ..types.comment_type import Comment
 
-async def resolve_posts(info : Info, user_id : Optional[str] = None) -> List[Post]:
+async def resolve_posts(info : Info, user_id : Optional[str] = None, amount : Optional[int] = 1) -> List[Post]:
 
     db = info.context['db']
     comment_loader = info.context['comment_loader']
+
     reply_loader = info.context['reply_loader']
-    backend = info.context["backend_client"]
+    user_loader = info.context['user_loader']
 
     posts = []
     
     if user_id:
 
-        posts = await db.get_posts_by_user_id(user_id)
+        try:
+
+            posts = await db.get_posts_by_user_id(user_id)
+
+        except Exception as e:
+
+            raise e
 
     else:
 
-        posts = await db.get_all_posts()
+        try:
+
+            posts = await db.get_all_posts()
+
+        except Exception as e:
+
+            raise e
 
     result = []
 
-    for post in posts:
+    if len(posts) != 0:
 
-        post_id_str = str(post['_id'])
+        for i in range(amount):
+        
+            post = posts[i]
 
-        comment_data = await comment_loader.load(post_id_str)
+            post_id_str = str(post['_id'])
 
-        userData = backend.get_user(post['user_id'])
+            comment_data = await comment_loader.load(post_id_str)
 
-        comments = [
-            Comment(
-                id=str(c['_id']),
-                user_id=c['user_id'],
-                post_id=c['post_id'],
-                text=c['text'],
-                likes=c.get('likes', 0),
-                dislikes=c.get('dislikes', 0),
-                replies=[]
-            )
-            for c in comment_data
-        ]
+            userData = await user_loader.load(post['user_id'])
 
-        content_block = [
-            ContentBlock(
-                type=block["type"],
-                style=block["style"],
-                value=block["value"]
-            )
+            comments = [
+                Comment(
+                    id=str(c['_id']),
+                    user_id=c['user_id'],
+                    post_id=c['post_id'],
+                    text=c['text'],
+                    likes=c.get('likes', 0),
+                    dislikes=c.get('dislikes', 0),
+                    replies=[]
+                )
+                for c in comment_data
+            ]
 
-            for block in post['content']
-        ]
+            content_block = [
+                ContentBlock(
+                    type=block["type"],
+                    style=block["style"],
+                    value=block["value"]
+                )
 
-        result.append(Post(
-            id=str(post['_id']),
-            user_data=UserData(
-                user_id=userData.id,
-                user_name=userData.name,
-                user_avatar_url=userData.avatar,
-                user_login=userData.login
-            ),
-            datetime=post['datetime'],
-            title=post['title'],
-            preview_image=post['preview_image'],
-            content=content_block,
-            views=post['views'],
-            likes=post['likes'],
-            dislikes=post['dislikes'],
-            comments=comments
-        ))
+                for block in post['content']
+            ]
+
+            result.append(Post(
+                id=str(post['_id']),
+                user_data=UserData(
+                    id=userData.id,
+                    name=userData.name,
+                    avatar_url=userData.avatar,
+                    login=userData.login
+                ),
+                datetime=post['datetime'],
+                title=post['title'],
+                preview_image=post['preview_image'],
+                content=content_block,
+                views=post['views'],
+                likes=post['likes'],
+                dislikes=post['dislikes'],
+                category=post['category'],
+                comments=comments
+            ))
 
     return result
 
@@ -127,5 +145,6 @@ async def resolve_post_by_id(info : Info, post_id : str) -> Optional[Post]:
         views=post['views'],
         likes=post['likes'],
         dislikes=post['dislikes'],
+        category=post['category'],
         comments=comments
     )

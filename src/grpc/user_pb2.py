@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nuser.proto\"\x19\n\x0bUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\x1e\n\x0fUserListRequest\x12\x0b\n\x03ids\x18\x01 \x03(\t\"s\n\x0cUserResponse\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\x12\x0e\n\x06legend\x18\x04 \x01(\t\x12\x0e\n\x06\x61vatar\x18\x05 \x01(\t\x12\r\n\x05login\x18\x06 \x01(\t\x12\x17\n\x0freputationScore\x18\x07 \x01(\x05\"0\n\x10UserListResponse\x12\x1c\n\x05users\x18\x01 \x03(\x0b\x32\r.UserResponse2c\n\x08UserGrpc\x12&\n\x07GetUser\x12\x0c.UserRequest\x1a\r.UserResponse\x12/\n\x08GetUsers\x12\x10.UserListRequest\x1a\x11.UserListResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nuser.proto\"\x19\n\x0bUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\x1e\n\x0fUserListRequest\x12\x0b\n\x03ids\x18\x01 \x03(\t\"\x7f\n\x0cUserResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\x12\x0e\n\x06legend\x18\x04 \x01(\t\x12\x0e\n\x06\x61vatar\x18\x05 \x01(\t\x12\r\n\x05login\x18\x06 \x01(\t\x12\x17\n\x0freputationScore\x18\x07 \x01(\x05\"0\n\x10UserListResponse\x12\x1c\n\x05users\x18\x01 \x03(\x0b\x32\r.UserResponse2c\n\x08UserGrpc\x12&\n\x07GetUser\x12\x0c.UserRequest\x1a\r.UserResponse\x12/\n\x08GetUsers\x12\x10.UserListRequest\x1a\x11.UserListResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,9 +36,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_USERLISTREQUEST']._serialized_start=41
   _globals['_USERLISTREQUEST']._serialized_end=71
   _globals['_USERRESPONSE']._serialized_start=73
-  _globals['_USERRESPONSE']._serialized_end=188
-  _globals['_USERLISTRESPONSE']._serialized_start=190
-  _globals['_USERLISTRESPONSE']._serialized_end=238
-  _globals['_USERGRPC']._serialized_start=240
-  _globals['_USERGRPC']._serialized_end=339
+  _globals['_USERRESPONSE']._serialized_end=200
+  _globals['_USERLISTRESPONSE']._serialized_start=202
+  _globals['_USERLISTRESPONSE']._serialized_end=250
+  _globals['_USERGRPC']._serialized_start=252
+  _globals['_USERGRPC']._serialized_end=351
 # @@protoc_insertion_point(module_scope)
